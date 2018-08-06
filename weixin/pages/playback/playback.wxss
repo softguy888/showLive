@@ -1,0 +1,6 @@
+.label{
+  background-color: #3D98F5;
+  color: white;
+  border-bottom-left-radius: 6px;
+  border-top-left-radius: 6px;
+}

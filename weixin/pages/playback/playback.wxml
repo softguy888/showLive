@@ -1,0 +1,17 @@
+<video src='{{videoUrl}}' autoplay='{{true}}' style='width:100%'></video>
+<view class="weui-cell weui-cell_input" style='margin-bottom:10px; text-align:center;'>
+  <view class="weui-cell__hd">
+    <view class="weui-label label">直播主题:</view>
+  </view>
+  <view class="weui-cell__bd">
+    <view class="">{{title}}</view>
+  </view>
+</view>
+<view class="weui-cell weui-cell_input" style='text-align:center;'>
+  <view class="weui-cell__hd">
+    <view class="weui-label label">直播时间:</view>
+  </view>
+  <view class="weui-cell__bd">
+    <view class="">{{time}}</view>
+  </view>
+</view>

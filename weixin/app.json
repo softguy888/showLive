@@ -1,0 +1,18 @@
+{
+  "pages":[
+   "pages/login/login",
+    "pages/main/main",
+    "pages/search/search",
+    "pages/index/index",
+    "pages/playback/playback",
+    "pages/room/room",
+    "pages/logs/logs"
+    
+  ],
+  "window":{
+    "backgroundTextStyle":"dark",
+    "navigationBarBackgroundColor": "#09C7F7",
+    "navigationBarTitleText": "美播云互动",
+    "navigationBarTextStyle":"blank"
+  }
+}

@@ -1,0 +1,100 @@
+.page_row{
+  padding-top: 20rpx;
+}
+.search{
+  width: 80%;
+}
+.search_arr {
+  border: 1px solid #d0d0d0;
+  border-radius: 10rpx;
+  margin-left: 20rpx;
+  font-size:14px; 
+}
+.search_arr input{
+  margin-left: 60rpx;
+  height: 60rpx;
+  border-radius: 5px;
+}
+.bc_text {
+  line-height: 68rpx;
+  height: 68rpx;
+  margin-top: 34rpx;
+}
+ 
+.sousuo {
+  margin-left: 15rpx;
+  /* width: 15%; */
+  /* line-height: 150%; */
+  text-align: center;
+  /* border: 1px solid #d0d0d0; */
+  border-radius: 10rpx;
+  font-size: 13px;
+}
+.page_row{
+  display: flex;
+  flex-direction: row
+}
+.searchcion {
+  margin: 10rpx 10rpx 10rpx 10rpx;
+  position: absolute;
+  left:25rpx;
+  z-index: 2;
+  width: 20px;
+  height: 20px;
+  text-align: center;
+}
+.channel-title{
+  /* width: 160px;  */
+  overflow: hidden; 
+  text-overflow:ellipsis; 
+  white-space: nowrap;
+  text-align: center;
+}
+
+.channel-item{
+  margin-top: 16rpx;
+  font-size: 14px;
+  color:#8d8b8b;
+}
+
+.channel {
+  margin-top: 20px;
+  border-bottom: 1px solid #e0dfdf; 
+  text-align: center;
+}
+
+.channel-status {
+  text-align: left;
+  padding-left: 30px;
+}
+ .scroll-channel {
+  margin-top:20px; 
+ }
+
+ .live-icon{
+   border-radius: 5px;
+   background-color: green;
+   height: 10px;
+   width: 10px;
+   float: left;
+   margin: 8px;
+ }
+
+  .wait-icon{
+   border-radius: 5px;
+   background-color: yellowgreen;
+   height: 10px;
+   width: 10px;
+   float: left;
+   margin: 10px;
+ }
+
+  .end-icon{
+   border-radius: 5px;
+   background-color: red;
+   height: 10px;
+   width: 10px;
+   float: left;
+   margin: 10px;
+ }
+
