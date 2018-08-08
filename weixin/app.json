@@ -1,11 +1,13 @@
 {
   "pages":[
-   "pages/login/login",
+    
     "pages/main/main",
+   "pages/login/login",
+    "pages/room/room",
     "pages/search/search",
     "pages/index/index",
     "pages/playback/playback",
-    "pages/room/room",
+    
     "pages/logs/logs"
     
   ],

@@ -1,5 +1,6 @@
 .header {
-    margin: 90rpx 0 90rpx 50rpx;
+    margin: 0 0 90rpx 50rpx;
+    padding-top: 90rpx; 
     border-bottom: 1px solid #ccc;
     text-align: center;
     width: 650rpx;
@@ -8,8 +9,8 @@
 }
  
 .header image {
-    width: 200rpx;
-    height: 200rpx;
+    width: 260rpx;
+    height: 260rpx;
 }
  
 .content {

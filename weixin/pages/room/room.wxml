@@ -1,13 +1,14 @@
 <import src="../../wxParse/wxParse.wxml" />
 <view>
   <view wx:if='{{liveStatus == 1}}' bindtap='clickScreen'>
-    <live-player orientation='{{orientation}}' object-fit='fillCrop' id="player" src="{{rtmpUrl}}" mode='live' autoplay bindstatechange="statechange" binderror="error" style="width: 100%; height: {{windowHeight * 0.3}}px;">
+    <live-player orientation='{{orientation}}' object-fit='fillCrop' id="player" src="{{rtmpUrl}}" mode='live' autoplay bindstatechange="statechange" binderror="error" bindfullscreenchange='fullScreenChange' style="width: 100%; height: {{windowHeight * 0.3}}px;">
       <cover-view class='cover-control' hidden='{{showControl}}' style='top:{{windowHeight*0.22}}px'>
         <cover-image class="cover-full" bindtap="bindFullScreen" src="../../images/fullScreen.png" />
       </cover-view>
       <cover-view class='cover-full-control' hidden='{{showFullControl}}' style='top:{{windowHeight*0.98}}px'>
         <cover-image class="cover-existfull" bindtap="bindExistFullScreen" src="../../images/fullScreenBack.png" />
       </cover-view>
+      <!-- <cover-view class='users_comments' hidden='{{showFullControl}}'></cover-view> -->
     </live-player>
   </view>
   <view wx:else style='width: 100%; height: {{windowHeight * 0.3}}px; text-align: center; margin: 0 auto;background:url({{liveImage}}) no-repeat center;background-size:100% 100%;'>
@@ -108,7 +109,7 @@
           <!-- <view class='users' wx:for="{{users}}" wx:for-index="myIndex" wx:for-item="user">
             {{user.visit_name}}
           </view> -->
-          <scroll-view class="list" style="height:{{windowHeight * 0.54}}px;" scroll-y='true' bindscrolltolower="bindDownLoad" bindscrolltoupper="topLoad" bindscroll="scroll">
+          <scroll-view class="list" style="height:{{windowHeight * 0.54}}px;" scroll-y='true' bindscrolltolower="usersLoadMore" bindscrolltoupper="usersReload" bindscroll="scroll">
             <view class="flex">
               <view class="item" wx:for="{{users}}" wx:for-index="myIndex" wx:for-item="user" style='height:{{windowHeight * 0.14}}px'>
                 <!-- <view class="weui-flex__item"> -->
@@ -127,7 +128,7 @@
           </view>
         </view>
         <view class="weui-tab__content" hidden="{{activeIndex != 3}}">
-          <scroll-view class="scroll-playBack" style="height:{{windowHeight * 0.54}}px;" scroll-y='true' bindscrolltolower="" bindscrolltoupper="">
+          <scroll-view class="scroll-playBack" style="height:{{windowHeight * 0.54}}px;" scroll-y='true' bindscrolltolower="playbackLoadMore" bindscrolltoupper="playbackReload">
             <view class="flex">
               <view class="playback-item" wx:for="{{playbacks}}" wx:for-index="index" wx:for-item="playback" style='height:{{windowHeight * 0.25}}px' catchtap='playback' data-video="{{playback}}">
                 <image class='playback-logo' style='width:{{windowWidth*0.45}}px;height:{{windowHeight * 0.15}}px' src='{{playback.coverUrl}}'></image>

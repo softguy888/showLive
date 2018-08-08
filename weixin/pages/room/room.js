@@ -13,7 +13,8 @@ var message = '';
 var date_comments = '';
 var date_channels = '';
 
-var page = 1;
+var page = 1;//成员页数
+var page_playback = 1;//回放页数
 var page_size = 5;
 var sort = "last";
 var is_easy = 0;
@@ -99,7 +100,12 @@ Page({
     //base64 解码
     var parsedWordArray = CryptoJS.enc.Base64.parse(option.detail);
     var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);
-    WxParse.wxParse('article', 'html', parsedStr, that, 5);
+    try {
+      WxParse.wxParse('article', 'html', parsedStr, that, 5);
+    } catch (e) {
+      console.error(e);
+    }
+
     //设置从index页面传过来的频道信息
     this.setData({
       rtmpUrl: option.rtmpUrl,
@@ -313,166 +319,73 @@ Page({
     this.setData({
       sliderOffset: e.currentTarget.offsetLeft,
       activeIndex: e.currentTarget.id,
-      // users: users
+      //users: users
     });
     if (e.currentTarget.id == 1) { //点击聊天tab
       // this.setData({
       //   focus: true
       // });
     } else if (e.currentTarget.id == 2) { //点击成员tab
-      page = 1;
-      var StringToSign =
-        "GET" + "\n" +
-        new Date().toGMTString() + "\n" +
-        "\n\n" +
-        userListUrl + this.data.channel + "/users?page=1&filter=1" +
-        "&sort=asc";
-      var hmacsha1 = "" + CryptoJS.HmacSHA1(StringToSign, app.globalData.AccessKeySecret);
-      var wordArray = CryptoJS.enc.Utf8.parse(hmacsha1);
-      var base64_auth = CryptoJS.enc.Base64.stringify(wordArray)
-
-      var that = this;
-      wx.request({
-        url: userListUrl + this.data.channel + "/users",
-        data: {
-          page: 1,
-          filter: 1,
-          sort: 'asc'
-        },
-        header: {
-          'Authorization': 'iMBCloud ' + app.globalData.AccessKeyId + ':' + base64_auth,
-          'Date': new Date().toGMTString(),
-          'content-type': 'application/json' // 默认值
-        },
-        method: 'GET',
-        dataType: 'json',
-        success: function(res) {
-          var data = res.data;
-          console.log(data);
-          if (data.result == 'success') {
-            var users = data.users;
-            for (var i = 0; i < users.length; i++) {
-              var parsedWordArray = CryptoJS.enc.Base64.parse(users[i].visit_name);
-              var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);
-              users[i].visit_name = parsedStr;
-            }
-            that.setData({
-              users: users
-            });
-          } else {
-            console.log('fail reason:' + data.reason);
-          }
-        }
-      });
+      getUsers(this);
     } else if (e.currentTarget.id == 3) { //点击回放tab
-      //page_replay = 1;
-      var playback_demo = [{
-        title: '2018-07-26 16:31:47_2018-07-26 18:01:45',
-        coverUrl: 'http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/718114f05285890780734647008/1532599567_3715980542.100_0.jpg',
-        videoUrl: 'http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/718114f05285890780734647008/f0.mp4'
-      }, {
-        title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-        coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-        videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      }, {
-        title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-        coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-        videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      }, {
-        title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-        coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-        videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      }, {
-        title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-        coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-        videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      }, {
-        title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-        coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-        videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      }, {
-        title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-        coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-        videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      }, {
-        title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-        coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-        videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      }, {
-        title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-        coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-        videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      }, {
-        title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-        coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-        videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      }, {
-        title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-        coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-        videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      }, {
-        title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-        coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-        videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      }, {
-        title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-        coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-        videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      }];
-      this.setData({
-        //playbacks: playback_demo
-      });
-      var StringToSign =
-        "GET" + "\n" +
-        new Date().toGMTString() + "\n" +
-        "\n\n" +
-        replayUrl + this.data.channel + "?title=&status=1&page=1";
-      var hmacsha1 = "" + CryptoJS.HmacSHA1(StringToSign, app.globalData.AccessKeySecret);
-      var wordArray = CryptoJS.enc.Utf8.parse(hmacsha1);
-      var base64_auth = CryptoJS.enc.Base64.stringify(wordArray);
-      var that = this;
-      wx.request({
-        url: replayUrl + this.data.channel,
-        data: {
-          title: '',
-          status: 1,
-          page: 1
-        },
-        header: {
-          'Authorization': 'iMBCloud ' + app.globalData.AccessKeyId + ':' + base64_auth,
-          'Date': new Date().toGMTString(),
-          'content-type': 'application/json' // 默认值
-        },
-        method: 'GET',
-        dataType: 'json',
-        success: function(res) {
-          var data = res.data;
-          console.log(data);
-          if (data.result == 'success') {
-            var videos = data.videos;
-            var videoArr = new Array();
-            for (var i = 0; i < videos.length; i++) {
-              var video = videos[i];
-              var coverUrl = video.cover_url;
-              var title = video.title;
-              var videoUrl = video.video_url;
-              var time = video.create_time;
-              var videoObj = {
-                coverUrl: coverUrl,
-                title: title,
-                videoUrl: videoUrl,
-                time: time
-              }
-              videoArr.push(videoObj);
-            }
-            that.setData({
-              playbacks: videoArr
-            });
-          } else {
-            console.log('fail reason:' + data.reason);
-          }
-        }
-      });
+      // var playback_demo = [{
+      //   title: '2018-07-26 16:31:47_2018-07-26 18:01:45',
+      //   coverUrl: 'http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/718114f05285890780734647008/1532599567_3715980542.100_0.jpg',
+      //   videoUrl: 'http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/718114f05285890780734647008/f0.mp4'
+      // }, {
+      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+      // }, {
+      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+      // }, {
+      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+      // }, {
+      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+      // }, {
+      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+      // }, {
+      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+      // }, {
+      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+      // }, {
+      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+      // }, {
+      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+      // }, {
+      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+      // }, {
+      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+      // }, {
+      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+      // }];
+      // this.setData({
+      //   playbacks: playback_demo
+      // });
+     
+     getPlayback(this);
     }
   },
 
@@ -533,17 +446,33 @@ Page({
     })
   },
 
+  fullScreenChange(option) {
+    console.log(option.detail.fullScreen);
+    if (option.detail.fullScreen) {
+      this.setData({
+        showControl: true,
+        fullScreen: true,
+        orientation: 'horizontal'
+      });
+    } else {
+      this.setData({
+        showFullControl: true,
+        fullScreen: false,
+        orientation: 'vertical'
+      });
+    }
+  },
+
   bindFullScreen() {
     var that = this;
-    that.setData({
-      showControl: true,
-      fullScreen: true
+    this.setData({
+      showControl: true
     });
     this.ctx.requestFullScreen({
       success: res => {
-        that.setData({
-          orientation: 'horizontal'
-        })
+        // that.setData({
+        //   orientation: 'horizontal'
+        // })
       },
       fail: res => {
         console.log('fullScreen fail')
@@ -552,15 +481,14 @@ Page({
   },
   bindExistFullScreen() {
     var that = this;
-    that.setData({
-      showFullControl: true,
-      fullScreen: false
+    this.setData({
+      showFullControl: true
     });
     this.ctx.exitFullScreen({
       success: res => {
-        that.setData({
-          orientation: 'vertical'
-        })
+        // that.setData({
+        //   orientation: 'vertical'
+        // })
       },
       fail: res => {
         console.log('exist ullScreen fail')
@@ -569,11 +497,23 @@ Page({
   },
 
   //页面滑动到底部
-  bindDownLoad: function() {
+  usersLoadMore: function() {
     console.log("lower");
-    var that = this;
-    loadMore(that);
+    loadMore(this);
   },
+
+  usersReload: function() {
+    getUsers(this);
+  },
+
+  playbackLoadMore: function(){
+    loadMorePlayback(this);
+  },
+
+  playbackReload: function () {
+    getPlayback(this);
+  },
+
   scroll: function(event) {
     //该方法绑定了页面滚动时的事件，我这里记录了当前的position.y的值,为了请求数据之后把页面定位到这里来。
     this.setData({
@@ -745,6 +685,161 @@ var loadMore = function(that) {
         });
       } else {
         console.log("fail reason:" + data.reason);
+      }
+    }
+  });
+}
+
+var loadMorePlayback = function(that) {
+  page_playback ++;
+  var StringToSign =
+    "GET" + "\n" +
+    new Date().toGMTString() + "\n" +
+    "\n\n" +
+    replayUrl + that.data.channel + "?title=&status=1&page=" + page_playback;
+  var hmacsha1 = "" + CryptoJS.HmacSHA1(StringToSign, app.globalData.AccessKeySecret);
+  var wordArray = CryptoJS.enc.Utf8.parse(hmacsha1);
+  var base64_auth = CryptoJS.enc.Base64.stringify(wordArray);
+  wx.request({
+    url: replayUrl + that.data.channel,
+    data: {
+      title: '',
+      status: 1,
+      page: page_playback
+    },
+    header: {
+      'Authorization': 'iMBCloud ' + app.globalData.AccessKeyId + ':' + base64_auth,
+      'Date': new Date().toGMTString(),
+      'content-type': 'application/json' // 默认值
+    },
+    method: 'GET',
+    dataType: 'json',
+    success: function (res) {
+      var data = res.data;
+      console.log(data);
+      if (data.result == 'success') {
+        var videos = data.videos;
+        var videoArr = new Array();
+        for (var i = 0; i < videos.length; i++) {
+          var video = videos[i];
+          var coverUrl = video.cover_url;
+          var title = video.title;
+          var videoUrl = video.video_url;
+          var time = video.create_time;
+          var videoObj = {
+            coverUrl: coverUrl,
+            title: title,
+            videoUrl: videoUrl,
+            time: time
+          }
+          videoArr.push(videoObj);
+        }
+        var tmp = that.data.playbacks.concat(videoArr);
+        that.setData({
+          playbacks: videoArr
+        });
+      } else {
+        console.log('fail reason:' + data.reason);
+      }
+    }
+  });
+}
+
+var getUsers = function(that) {
+  page = 1;
+  var StringToSign =
+    "GET" + "\n" +
+    new Date().toGMTString() + "\n" +
+    "\n\n" +
+    userListUrl + that.data.channel + "/users?page=1&filter=1" +
+    "&sort=asc";
+  var hmacsha1 = "" + CryptoJS.HmacSHA1(StringToSign, app.globalData.AccessKeySecret);
+  var wordArray = CryptoJS.enc.Utf8.parse(hmacsha1);
+  var base64_auth = CryptoJS.enc.Base64.stringify(wordArray)
+
+  wx.request({
+    url: userListUrl + that.data.channel + "/users",
+    data: {
+      page: 1,
+      filter: 1,
+      sort: 'asc'
+    },
+    header: {
+      'Authorization': 'iMBCloud ' + app.globalData.AccessKeyId + ':' + base64_auth,
+      'Date': new Date().toGMTString(),
+      'content-type': 'application/json' // 默认值
+    },
+    method: 'GET',
+    dataType: 'json',
+    success: function (res) {
+      var data = res.data;
+      console.log(data);
+      if (data.result == 'success') {
+        var users = data.users;
+        for (var i = 0; i < users.length; i++) {
+          var parsedWordArray = CryptoJS.enc.Base64.parse(users[i].visit_name);
+          var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);
+          users[i].visit_name = parsedStr;
+        }
+        that.setData({
+          users: users
+        });
+      } else {
+        console.log('fail reason:' + data.reason);
+      }
+    }
+  });
+}
+
+var getPlayback = function(that){
+  page_playback = 1;
+  var StringToSign =
+    "GET" + "\n" +
+    new Date().toGMTString() + "\n" +
+    "\n\n" +
+    replayUrl + that.data.channel + "?title=&status=1&page=" + page_playback;
+  var hmacsha1 = "" + CryptoJS.HmacSHA1(StringToSign, app.globalData.AccessKeySecret);
+  var wordArray = CryptoJS.enc.Utf8.parse(hmacsha1);
+  var base64_auth = CryptoJS.enc.Base64.stringify(wordArray);
+  wx.request({
+    url: replayUrl + that.data.channel,
+    data: {
+      title: '',
+      status: 1,
+      page: page_playback
+    },
+    header: {
+      'Authorization': 'iMBCloud ' + app.globalData.AccessKeyId + ':' + base64_auth,
+      'Date': new Date().toGMTString(),
+      'content-type': 'application/json' // 默认值
+    },
+    method: 'GET',
+    dataType: 'json',
+    success: function (res) {
+      var data = res.data;
+      console.log(data);
+      if (data.result == 'success') {
+        var videos = data.videos;
+        var videoArr = new Array();
+        for (var i = 0; i < videos.length; i++) {
+          var video = videos[i];
+          var coverUrl = video.cover_url;
+          var title = video.title;
+          var videoUrl = video.video_url;
+          var time = video.create_time;
+          var videoObj = {
+            coverUrl: coverUrl,
+            title: title,
+            videoUrl: videoUrl,
+            time: time
+          }
+          videoArr.push(videoObj);
+        }
+        that.setData({
+          playbacks: videoArr
+        });
+      } else {
+        console.log('fail reason:' + data.reason);
       }
     }
   });

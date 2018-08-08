@@ -1,50 +1,96 @@
 <!-- <button wx:if="{{canIUse}}" open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">授权登录</button>
 <view wx:else>请升级微信版本</view> -->
 <view>
-  <view class='page_row' >
+  <view class='page_row'>
     <view class="search">
       <view class="df search_arr">
         <icon class="searchcion" size='20' type='search'></icon>
-        <input class="" bindinput="searchValueInput"  placeholder="搜索频道号或频道名称" value="{{searchValue}}" />
+        <input class="" bindinput="searchValueInput" placeholder="搜索频道号或频道名称" value="{{searchValue}}" />
       </view>
     </view>
     <button class='sousuo' bindtap="search">搜索</button>
   </view>
 
-  <scroll-view class="scroll-channel" upper-threshold='0' style="" scroll-y='false' bindscrolltolower="" bindscrolltoupper="">
+  <view class="scroll-channel" upper-threshold='0' style="">
     <view class="flex">
       <view class='channel' wx:if="{{liveChannels.length > 0}}">
-        <view class='channel-status'>
-          <view class='live-icon'></view>正在直播</view>
-        <view class="channel-item" wx:for="{{liveChannels}}" wx:for-index="index" wx:for-item="channel" style='height:{{windowHeight * 0.30}}px;' catchtap='enterChannel' data-channel="{{channel}}">
-          <image class='channel-logo' style='width:{{windowWidth*0.84}}px;height:{{windowHeight * 0.25}}px' src='{{channel.image}}'></image>
-          <view class='channel-title' style='    '>{{channel.name}}</view>
+        <view class="channel-item" wx:for="{{liveChannels}}" wx:for-index="index" wx:for-item="channel" style='' catchtap='enterChannel' data-channel="{{channel}}">
+          <view class='line'></view>
+          <view class='channel-logo' style='position:relative;width:100%;height:{{windowHeight * 0.30}}px; margin: 0 auto;background:url({{channel.image}}) no-repeat center;background-size:100% 100%;'>
+            <view class='status' style='background-color:green'>正在直播</view>
+          </view>
+          <view class='channel-title'>{{channel.name}}</view>
+          <view class='channel-time'>{{channel.time}}
+            <view class='users-comments'>
+              <image src='../../images/users.png' class='icon'></image>
+              <view class='watch-num'>{{channel.userNum}}</view>
+              <image src='../../images/comments.png' class='icon'></image>
+              <view class='watch-num'>{{channel.commentCount}}</view>
+            </view>
+          </view>
         </view>
       </view>
 
       <view class='channel' wx:if="{{waitChannels.length > 0}}">
-        <view class='channel-status'>
-          <view class='wait-icon'></view>预约直播</view>
-        <view class="channel-item" wx:for="{{waitChannels}}" wx:for-index="index" wx:for-item="channel" style='height:{{windowHeight * 0.30}}px;' catchtap='enterChannel' data-channel="{{channel}}">
-          <image class='channel-logo' style='width:{{windowWidth*0.84}}px;height:{{windowHeight * 0.25}}px' src='{{channel.image}}'></image>
-          <view class='channel-title' style=''>{{channel.name}}</view>
+        <view class="channel-item" wx:for="{{waitChannels}}" wx:for-index="index" wx:for-item="channel" catchtap='enterChannel' data-channel="{{channel}}">
+          <view class='line'></view>
+          <view class='channel-logo' style='position:relative;width:100%;height:{{windowHeight * 0.30}}px;text-align: center; margin: 0 auto;background:url({{channel.image}}) no-repeat center;background-size:100% 100%;'>
+            <view class='status' style='background-color:#6df9f5'>预约直播</view>
+          </view>
+          <view class='channel-title'>{{channel.name}}</view>
+          <view class='channel-time'>{{channel.time}}
+            <view class='users-comments'>
+              <image src='../../images/users.png' class='icon'></image>
+              <view class='watch-num'>{{channel.userNum}}</view>
+              <image src='../../images/comments.png' class='icon'></image>
+              <view class='watch-num'>{{channel.commentCount}}</view>
+            </view>
+          </view>
         </view>
       </view>
 
       <view class='channel' wx:if="{{endChannels.length > 0}}">
-        <view class='channel-status'>
-          <view class='end-icon'></view>已结束</view>
-        <view class="channel-item" wx:for="{{endChannels}}" wx:for-index="index" wx:for-item="channel" style='height:{{windowHeight * 0.30}}px;' catchtap='enterChannel' data-channel="{{channel}}">
-          <image class='channel-logo' style='width:{{windowWidth*0.84}}px;height:{{windowHeight * 0.25}}px' src='{{channel.image}}'></image>
+        <view class="channel-item" wx:for="{{endChannels}}" wx:for-index="index" wx:for-item="channel" catchtap='enterChannel' data-channel="{{channel}}">
+          <view class='line'></view>
+          <view class='channel-logo' style='position:relative;width:100%;height:{{windowHeight * 0.30}}px;text-align: center; margin: 0 auto;background:url({{channel.image}}) no-repeat center;background-size:100% 100%;'>
+            <view class='status' style='background-color:red'>直播结束</view>
+          </view>
           <view class='channel-title' style=''>{{channel.name}}</view>
+          <view class='channel-time'>{{channel.time}}
+            <view class='users-comments'>
+              <image src='../../images/users.png' class='icon'></image>
+              <view class='watch-num'>{{channel.userNum}}</view>
+              <image src='../../images/comments.png' class='icon'></image>
+              <view class='watch-num'>{{channel.commentCount}}</view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class='channel' wx:if="{{playbacks.length > 0}}">
+        <view class="channel-item" wx:for="{{playbacks}}" wx:for-index="index" wx:for-item="playback" catchtap='enterPlayback' data-playback="{{playback}}">
+          <view class='line'></view>
+          <view class='channel-logo' style='position:relative;width:100%;height:{{windowHeight * 0.30}}px;text-align: center; margin: 0 auto;background:url({{channel.image}}) no-repeat center;background-size:100% 100%;'>
+            <view class='status' style='background-color:red'>回放</view>
+          </view>
+          <view class='channel-title' style=''>{{playback.name}}</view>
+          <view class='channel-time'>{{playback.time}}
+            <view class='users-comments'>
+              <image src='../../images/users.png' class='icon'></image>
+              <view class='watch-num'>{{playback.userNum}}</view>
+              <image src='../../images/comments.png' class='icon'></image>
+              <view class='watch-num'>{{playback.commentCount}}</view>
+            </view>
+          </view>
         </view>
       </view>
     </view>
-  </scroll-view>
-   <view class="weui-loadmore" hidden="{{isHideLoadMore}}">
+  </view>
+  <view class='line'></view>
+  <view class="weui-loadmore" hidden="{{isHideLoadMore}}">
     <view class="weui-loading"></view>
     <view class="weui-loadmore__tips">正在加载</view>
-  </view> 
+  </view>
   <view class="weui-loadmore weui-loadmore_line" hidden="{{isLoadAll}}">
     <view class="weui-loadmore__tips weui-loadmore__tips_in-line">已经全部加载完毕</view>
   </view>

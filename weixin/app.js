@@ -2,8 +2,8 @@
 App({
   globalData: {
     userInfo: null,
-    AccessKeyId: 'admin',
-    AccessKeySecret: 'imb_cloud123'
+    AccessKeyId: '000002',
+    AccessKeySecret: 'abcd5678'
   },
 
   onLaunch: function (options) {
