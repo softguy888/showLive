@@ -70,7 +70,7 @@
       <view class='channel' wx:if="{{playbacks.length > 0}}">
         <view class="channel-item" wx:for="{{playbacks}}" wx:for-index="index" wx:for-item="playback" catchtap='enterPlayback' data-playback="{{playback}}">
           <view class='line'></view>
-          <view class='channel-logo' style='position:relative;width:100%;height:{{windowHeight * 0.30}}px;text-align: center; margin: 0 auto;background:url({{channel.image}}) no-repeat center;background-size:100% 100%;'>
+          <view class='channel-logo' style='position:relative;width:100%;height:{{windowHeight * 0.30}}px;text-align: center; margin: 0 auto;background:url({{playback.image}}) no-repeat center;background-size:100% 100%;'>
             <view class='status' style='background-color:red'>回放</view>
           </view>
           <view class='channel-title' style=''>{{playback.name}}</view>

@@ -4,6 +4,10 @@ App({
     userInfo: null,
     AccessKeyId: '000002',
     AccessKeySecret: 'abcd5678'
+    // AccessKeyId: 'admin',
+    // AccessKeySecret: 'imb_cloud123'
+    // AccessKeyId: 'admin',
+    // AccessKeySecret: 'admin'
   },
 
   onLaunch: function (options) {

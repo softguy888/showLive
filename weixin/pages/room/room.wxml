@@ -1,8 +1,8 @@
 <import src="../../wxParse/wxParse.wxml" />
 <view>
-  <view wx:if='{{liveStatus == 1}}' bindtap='clickScreen'>
+  <view wx:if='{{liveStatus == 1}}' bindtap="clickScreen">
     <live-player orientation='{{orientation}}' object-fit='fillCrop' id="player" src="{{rtmpUrl}}" mode='live' autoplay bindstatechange="statechange" binderror="error" bindfullscreenchange='fullScreenChange' style="width: 100%; height: {{windowHeight * 0.3}}px;">
-      <cover-view class='cover-control' hidden='{{showControl}}' style='top:{{windowHeight*0.22}}px'>
+      <cover-view bindtap="clickScreen" class='cover-control' hidden='{{showControl}}' style='top:{{windowHeight*0.22}}px'>
         <cover-image class="cover-full" bindtap="bindFullScreen" src="../../images/fullScreen.png" />
       </cover-view>
       <cover-view class='cover-full-control' hidden='{{showFullControl}}' style='top:{{windowHeight*0.98}}px'>
@@ -84,7 +84,8 @@
 
         </view>
         <view class="weui-tab__content" hidden="{{activeIndex != 1}}">
-          <scroll-view scroll-y='true' class='scroll-comments' style='height:{{windowHeight * 0.52}}px'>
+        <!-- <view>你是大傻逼</view> -->
+          <scroll-view scroll-y='true' class='scroll-comments' style='height:{{windowHeight * 0.56}}px;'>
             <view class='comments' wx:for="{{comments}}" wx:for-index="index" wx:for-item="comment">
               <view class='comment-item'>
                 <view>
@@ -99,10 +100,9 @@
             </view>
           </scroll-view>
           <view class="sendmessage">
-            <input type="text" placeholder="请输入文字" confirm-type='send' bindinput="bindChange" value='{{news_input_val}}' adjust-position='{{false}}' cursor-spacing='150' focus="{{focus}}" />
-            <button catchtap="add">发送</button>
-            <!-- <input style='display:none' type="" bindinput="bindChange" confirm-type="done" placeholder="" /> -->
-            <!-- <image bindtap="upimg1" class='jia_img' src='../../../images/jia_img.png'></image> -->
+            <input type="text" placeholder="请输入文字" confirm-type='send' bindinput="bindChange" value='{{news_input_val}}' adjust-position='{{false}}' cursor-spacing='150' focus="{{focus}}">
+            </input>
+            <image src='../../images/sendBtn.png' catchtap="add"></image>
           </view>
         </view>
         <view class="weui-tab__content" hidden="{{activeIndex != 2}}">

@@ -12,9 +12,10 @@ var timer_live;
 var message = '';
 var date_comments = '';
 var date_channels = '';
-
-var page = 1;//成员页数
-var page_playback = 1;//回放页数
+var onlineUserNum;
+var historyUserNum;
+var page = 1; //成员页数
+var page_playback = 1; //回放页数
 var page_size = 5;
 var sort = "last";
 var is_easy = 0;
@@ -26,8 +27,8 @@ Page({
   data: {
     news_input_val: '',
     channel: '',
-    rtmpUrl: 'rtmp://23576.liveplay.myqcloud.com/live/23576_1',
-    liveImage: 'https://api.imbcloud.cn/res/img/login_bg.jpg',
+    rtmpUrl: '',
+    liveImage: '../../images/login_bg.jpg',
     coverLogo: 'https://api.imbcloud.cn/res/img/left_logo.png',
     liveStatus: '0',
     detail: {},
@@ -105,11 +106,14 @@ Page({
     } catch (e) {
       console.error(e);
     }
-
+    var liveimage = '../../images/login_bg.jpg';
+    if (option.liveImage && option.liveImage != '') {
+      liveimage = option.liveImage;
+    }
     //设置从index页面传过来的频道信息
     this.setData({
       rtmpUrl: option.rtmpUrl,
-      liveImage: option.liveImage,
+      liveImage: liveimage,
       coverLogo: option.coverLogo,
       liveStatus: option.liveStatus,
       name: option.name,
@@ -227,7 +231,7 @@ Page({
         page.data.userName + "&visit_id=" + page.data.visitId + "&date=" + date_channels;
       var hmacsha1 = "" + CryptoJS.HmacSHA1(StringToSign, app.globalData.AccessKeySecret);
       var wordArray = CryptoJS.enc.Utf8.parse(hmacsha1);
-      var base64_auth = CryptoJS.enc.Base64.stringify(wordArray)
+      var base64_auth = CryptoJS.enc.Base64.stringify(wordArray);
       wx.request({
         url: userListUrl + page.data.channel,
         data: {
@@ -256,15 +260,23 @@ Page({
             for (var i = 0; i < detail.length; i++) {
               detail[i] = detail[i].replace("<p>", "");
             }
+            var liveimage = '../../images/login_bg.jpg';
+            if (data.liveImage && data.liveImage != '') {
+              liveimage = data.liveImage;
+            }
             page.setData({
               rtmpUrl: data.streams.rtmp_play_url,
-              liveImage: data.live_image,
+              liveImage: liveimage,
               coverLogo: data.cover_logo,
               liveStatus: data.live_status,
               name: data.name,
               startTime: data.start_time,
             });
-
+            if (onlineUserNum != data.online_user_num || historyUserNum != data.history_user_num) {
+              onlineUserNum = data.online_user_num;
+              historyUserNum = data.history_user_num;
+              getUsers(page);
+            }
           } else if (data.result == 'fail') {
             // wx.showToast({
             //   title: '获取频道失败：' + data.reason,
@@ -280,7 +292,9 @@ Page({
         fail: function(res) {
           console.log(res);
           if (page.data.flag_channels) {
-            getChannels(page);
+            setTimeout(function() {
+              getChannels(page);
+            }, 500);
           }
         }
       })
@@ -384,8 +398,8 @@ Page({
       // this.setData({
       //   playbacks: playback_demo
       // });
-     
-     getPlayback(this);
+
+      getPlayback(this);
     }
   },
 
@@ -506,11 +520,11 @@ Page({
     getUsers(this);
   },
 
-  playbackLoadMore: function(){
+  playbackLoadMore: function() {
     loadMorePlayback(this);
   },
 
-  playbackReload: function () {
+  playbackReload: function() {
     getPlayback(this);
   },
 
@@ -531,6 +545,14 @@ Page({
     var that = this;
     //var messageArray = CryptoJS.enc.Utf8.parse(message);
     //var base64_message = CryptoJS.enc.Base64.stringify(messageArray)
+    if (message == '') {
+      wx.showToast({
+        title: '内容不允许为空',
+        icon: 'none',
+        duration: 2000
+      })
+      return;
+    }
     var body = "{\"visit_id\":\"" + that.data.visitId + "\",\"visit_name\":\"" +
       that.data.userName + "\",\"message\":\"" + message + "\"}";
     var body_md5 = CryptoJS.MD5(body).toString();
@@ -602,6 +624,7 @@ Page({
   },
 
   clickScreen: function() {
+    console.log('-----------click screen');
     var that = this;
     if (this.data.fullScreen) {
       if (this.data.showFullControl) {
@@ -691,7 +714,7 @@ var loadMore = function(that) {
 }
 
 var loadMorePlayback = function(that) {
-  page_playback ++;
+  page_playback++;
   var StringToSign =
     "GET" + "\n" +
     new Date().toGMTString() + "\n" +
@@ -714,7 +737,7 @@ var loadMorePlayback = function(that) {
     },
     method: 'GET',
     dataType: 'json',
-    success: function (res) {
+    success: function(res) {
       var data = res.data;
       console.log(data);
       if (data.result == 'success') {
@@ -771,7 +794,7 @@ var getUsers = function(that) {
     },
     method: 'GET',
     dataType: 'json',
-    success: function (res) {
+    success: function(res) {
       var data = res.data;
       console.log(data);
       if (data.result == 'success') {
@@ -791,7 +814,7 @@ var getUsers = function(that) {
   });
 }
 
-var getPlayback = function(that){
+var getPlayback = function(that) {
   page_playback = 1;
   var StringToSign =
     "GET" + "\n" +
@@ -815,7 +838,7 @@ var getPlayback = function(that){
     },
     method: 'GET',
     dataType: 'json',
-    success: function (res) {
+    success: function(res) {
       var data = res.data;
       console.log(data);
       if (data.result == 'success') {

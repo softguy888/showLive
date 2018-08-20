@@ -2,19 +2,19 @@
   "pages":[
     
     "pages/main/main",
-   "pages/login/login",
+    "pages/login/login",
     "pages/room/room",
     "pages/search/search",
     "pages/index/index",
     "pages/playback/playback",
-    
+    "pages/auth/auth",
     "pages/logs/logs"
     
   ],
   "window":{
     "backgroundTextStyle":"dark",
     "navigationBarBackgroundColor": "#09C7F7",
-    "navigationBarTitleText": "美播云互动",
+    "navigationBarTitleText": "秀视频live",
     "navigationBarTextStyle":"blank"
   }
 }
