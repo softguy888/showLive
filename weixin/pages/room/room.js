@@ -110,6 +110,7 @@ Page({
     if (option.liveImage && option.liveImage != '') {
       liveimage = option.liveImage;
     }
+    console.log('-------------'+liveimage);
     //设置从index页面传过来的频道信息
     this.setData({
       rtmpUrl: option.rtmpUrl,
@@ -207,15 +208,24 @@ Page({
                 comments: commentArr
               })
             }
-          }
-          if (page.data.flag_comments) {
-            getComments(page);
+            if (page.data.flag_comments) {
+              getComments(page);
+            }
+          }else{
+            console.log(data);
+            if (page.data.flag_comments) {
+              setTimeout(function () {
+                getComments(page);
+              }, 5000);
+            }
           }
         },
         fail: function(res) {
           console.log(res);
           if (page.data.flag_comments) {
-            getComments(page);
+            setTimeout(function () {
+              getComments(page);
+            }, 5000);
           }
         }
       })
@@ -261,9 +271,10 @@ Page({
               detail[i] = detail[i].replace("<p>", "");
             }
             var liveimage = '../../images/login_bg.jpg';
-            if (data.liveImage && data.liveImage != '') {
-              liveimage = data.liveImage;
+            if (data.live_image && data.live_image != '') {
+              liveimage = data.live_image;
             }
+            console.log('2-------------' + liveimage);
             page.setData({
               rtmpUrl: data.streams.rtmp_play_url,
               liveImage: liveimage,
@@ -277,6 +288,9 @@ Page({
               historyUserNum = data.history_user_num;
               getUsers(page);
             }
+            if (page.data.flag_channels) {
+              getChannels(page);
+            }
           } else if (data.result == 'fail') {
             // wx.showToast({
             //   title: '获取频道失败：' + data.reason,
@@ -284,9 +298,11 @@ Page({
             //   duration: 2000
             // })
             console.log('获取频道失败：' + data.reason);
-          }
-          if (page.data.flag_channels) {
-            getChannels(page);
+            if (page.data.flag_channels) {
+              setTimeout(function () {
+                getChannels(page);
+              }, 5000);
+            }
           }
         },
         fail: function(res) {
@@ -294,7 +310,7 @@ Page({
           if (page.data.flag_channels) {
             setTimeout(function() {
               getChannels(page);
-            }, 500);
+            }, 5000);
           }
         }
       })

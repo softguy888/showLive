@@ -20,14 +20,14 @@
             <view class='status' style='background-color:green'>正在直播</view>
           </view>
           <view class='channel-title'>{{channel.name}}</view>
-          <view class='channel-time'>{{channel.time}}
+          <!-- <view class='channel-time'>{{channel.time}}
             <view class='users-comments'>
               <image src='../../images/users.png' class='icon'></image>
               <view class='watch-num'>{{channel.userNum}}</view>
               <image src='../../images/comments.png' class='icon'></image>
               <view class='watch-num'>{{channel.commentCount}}</view>
             </view>
-          </view>
+          </view> -->
         </view>
       </view>
 
@@ -38,14 +38,14 @@
             <view class='status' style='background-color:#6df9f5'>预约直播</view>
           </view>
           <view class='channel-title'>{{channel.name}}</view>
-          <view class='channel-time'>{{channel.time}}
+          <!-- <view class='channel-time'>{{channel.time}}
             <view class='users-comments'>
               <image src='../../images/users.png' class='icon'></image>
               <view class='watch-num'>{{channel.userNum}}</view>
               <image src='../../images/comments.png' class='icon'></image>
               <view class='watch-num'>{{channel.commentCount}}</view>
             </view>
-          </view>
+          </view> -->
         </view>
       </view>
 
@@ -56,14 +56,14 @@
             <view class='status' style='background-color:red'>直播结束</view>
           </view>
           <view class='channel-title' style=''>{{channel.name}}</view>
-          <view class='channel-time'>{{channel.time}}
+          <!-- <view class='channel-time'>{{channel.time}}
             <view class='users-comments'>
               <image src='../../images/users.png' class='icon'></image>
               <view class='watch-num'>{{channel.userNum}}</view>
               <image src='../../images/comments.png' class='icon'></image>
               <view class='watch-num'>{{channel.commentCount}}</view>
             </view>
-          </view>
+          </view> -->
         </view>
       </view>
 

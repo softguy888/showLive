@@ -22,6 +22,7 @@ Page({
     isLoadAll: true,
     searchValue: ''
   },
+
   onLoad: function() {
     wx.showShareMenu();
     var that = this;
@@ -277,77 +278,77 @@ Page({
 
 
 function getChannelList(that, filter, page, loadmore) {
-  var channelive = [{
-    channel: '1',
-    name: 'And loved the sorrows of your changing face',
-    status: 1,
-    image: 'https://api.imbcloud.cn/res/img/login_bg.jpg',
-    id: '1',
-    time: '2018-06-19 20:36:44',
-    userNum: '23',
-    commentCount: '33'
-  }, {
-    channel: '1',
-    name: '我是一个名字很长很长很长很长的标题，好像还不够长，怎么办。',
-    status: 1,
-    image: 'https://api.imbcloud.cn/res/img/login_bg.jpg',
-    id: '1',
-    time: '2018-06-19 20:36:44',
-    userNum: '23',
-    commentCount: '33'
-  }, ]
-  var channewait = [{
-    channel: '1',
-    name: '人生若只如初见，何事秋风悲画扇。',
-    status: 0,
-    image: 'https://api.imbcloud.cn/res/img/login_bg.jpg',
-    id: '1',
-    time: '2018-06-19 20:36:44',
-    userNum: '23',
-    commentCount: '33'
-  }, {
-    channel: '1',
-    name: 'test',
-    status: 0,
-    image: 'https://api.imbcloud.cn/res/img/login_bg.jpg',
-    id: '1',
-    time: '2018-06-19 20:36:44',
-    userNum: '23',
-    commentCount: '33'
-  }, ]
-  var channeend = [{
-    channel: '1',
-    name: 'test',
-    status: -1,
-    image: 'https://api.imbcloud.cn/res/img/login_bg.jpg',
-    id: '1',
-    time: '2018-06-19 20:36:44',
-    userNum: '23',
-    commentCount: '33'
-  }, {
-    channel: '1',
-    name: 'test',
-    status: -1,
-    image: 'https://api.imbcloud.cn/res/img/login_bg.jpg',
-    id: '1',
-    time: '2018-06-19 20:36:44',
-    userNum: '23',
-    commentCount: '33'
-  }, ]
+  // var channelive = [{
+  //   channel: '1',
+  //   name: 'And loved the sorrows of your changing face',
+  //   status: 1,
+  //   image: 'https://api.imbcloud.cn/res/img/login_bg.jpg',
+  //   id: '1',
+  //   time: '2018-06-19 20:36:44',
+  //   userNum: '23',
+  //   commentCount: '33'
+  // }, {
+  //   channel: '1',
+  //   name: '我是一个名字很长很长很长很长的标题，好像还不够长，怎么办。',
+  //   status: 1,
+  //   image: 'https://api.imbcloud.cn/res/img/login_bg.jpg',
+  //   id: '1',
+  //   time: '2018-06-19 20:36:44',
+  //   userNum: '23',
+  //   commentCount: '33'
+  // }, ]
+  // var channewait = [{
+  //   channel: '1',
+  //   name: '人生若只如初见，何事秋风悲画扇。',
+  //   status: 0,
+  //   image: 'https://api.imbcloud.cn/res/img/login_bg.jpg',
+  //   id: '1',
+  //   time: '2018-06-19 20:36:44',
+  //   userNum: '23',
+  //   commentCount: '33'
+  // }, {
+  //   channel: '1',
+  //   name: 'test',
+  //   status: 0,
+  //   image: 'https://api.imbcloud.cn/res/img/login_bg.jpg',
+  //   id: '1',
+  //   time: '2018-06-19 20:36:44',
+  //   userNum: '23',
+  //   commentCount: '33'
+  // }, ]
+  // var channeend = [{
+  //   channel: '1',
+  //   name: 'test',
+  //   status: -1,
+  //   image: 'https://api.imbcloud.cn/res/img/login_bg.jpg',
+  //   id: '1',
+  //   time: '2018-06-19 20:36:44',
+  //   userNum: '23',
+  //   commentCount: '33'
+  // }, {
+  //   channel: '1',
+  //   name: 'test',
+  //   status: -1,
+  //   image: 'https://api.imbcloud.cn/res/img/login_bg.jpg',
+  //   id: '1',
+  //   time: '2018-06-19 20:36:44',
+  //   userNum: '23',
+  //   commentCount: '33'
+  // }, ]
 //http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/19317ad05285890781006571667/f0.mp4", transcodeList: Array(1), start_time: "2018-08-09 18:27:27", cover_url: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtra…85890781006571667/1533812511_3195201632.100_0.jpg
-  var p = [{
-    videoUrl: 'http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/19317ad05285890781006571667/f0.mp4',
-    name: '宽窄带',
-    image: "https://api.imbcloud.cn/res/img/login_bg.jpg",
-    time: '2018-08-09 18:27:27',
-    userNum: '22'
-  }];
-  that.setData({
-    liveChannels: channelive,
-    waitChannels: channewait,
-    endChannels: channeend,
-    playbacks: p
-  })
+  // var p = [{
+  //   videoUrl: 'http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/19317ad05285890781006571667/f0.mp4',
+  //   name: '宽窄带',
+  //   image: "https://api.imbcloud.cn/res/img/login_bg.jpg",
+  //   time: '2018-08-09 18:27:27',
+  //   userNum: '22'
+  // }];
+  // that.setData({
+  //   liveChannels: channelive,
+  //   waitChannels: channewait,
+  //   endChannels: channeend,
+  //   playbacks: p
+  // })
 
   var StringToSign =
     "GET" + "\n" +
