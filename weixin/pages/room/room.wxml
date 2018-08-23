@@ -8,7 +8,6 @@
       <cover-view class='cover-full-control' hidden='{{showFullControl}}' style='top:{{windowHeight*0.98}}px'>
         <cover-image class="cover-existfull" bindtap="bindExistFullScreen" src="../../images/fullScreenBack.png" />
       </cover-view>
-      <!-- <cover-view class='users_comments' hidden='{{showFullControl}}'></cover-view> -->
     </live-player>
   </view>
   <view wx:else style='width: 100%; height: {{windowHeight * 0.3}}px; text-align: center; margin: 0 auto;background:url({{liveImage}}) no-repeat center;background-size:100% 100%;'>
@@ -44,100 +43,94 @@
     </view>
   </view>
 </view>
-<view class="page">
-  <view class="page__bd">
-    <view class="weui-tab">
-      <view class="weui-navbar">
-        <block wx:for="{{tabs}}" wx:key="*this">
-          <view id="{{index}}" class="weui-navbar__item {{activeIndex == index ? 'weui-bar__item_on' : ''}}" bindtap="tabClick">
-            <view class="weui-navbar__title">{{item}}</view>
-          </view>
-        </block>
-        <view class="weui-navbar__slider" style="left: {{sliderLeft}}px; transform: translateX({{sliderOffset}}px); -webkit-transform: translateX({{sliderOffset}}px);"></view>
-      </view>
-      <view class="weui-tab__panel">
-        <view class="weui-tab__content" hidden="{{activeIndex != 0}}">
-          <view class="weui-cell weui-cell_input" style='margin-bottom:10px'>
-            <view class="weui-cell__hd">
-              <view class="weui-label label">直播主题:</view>
-            </view>
-            <view class="weui-cell__bd">
-              <view class="">{{name}}</view>
-            </view>
-          </view>
-          <view class="weui-cell weui-cell_input">
-            <view class="weui-cell__hd">
-              <view class="weui-label label">直播时间:</view>
-            </view>
-            <view class="weui-cell__bd">
-              <view class="">{{startTime}}</view>
-            </view>
-          </view>
-          <!-- <view class='detail' wx:for="{{detail}}" wx:for-index="myIndex" wx:for-item="myItem">
-            {{myItem}}
-          </view> -->
-          <scroll-view scroll-y='true' style='{{windowHeight * 0.55}}px'>
-            <view style='margin:50rpx 0 0 50rpx; text-align:left;'>
-              <template is="wxParse" data="{{wxParseData:article.nodes}}" />
-            </view>
-          </scroll-view>
-
-        </view>
-        <view class="weui-tab__content" hidden="{{activeIndex != 1}}">
-        <!-- <view>你是大傻逼</view> -->
-          <scroll-view scroll-y='true' class='scroll-comments' style='height:{{windowHeight * 0.56}}px;'>
-            <view class='comments' wx:for="{{comments}}" wx:for-index="index" wx:for-item="comment">
-              <view class='comment-item'>
-                <view>
-                  <image class='comment-logo' src='/images/user-m.png'></image>
-                  <view class='comment-info'>
-                    <view class='comment-name'>{{comment.name}}</view>
-                    <view class='comment-time'>{{comment.time}}</view>
-                  </view>
-                </view>
-                <view class='comment-message'>{{comment.message}}</view>
-              </view>
-            </view>
-          </scroll-view>
-          <view class="sendmessage">
-            <input type="text" placeholder="请输入文字" confirm-type='send' bindinput="bindChange" value='{{news_input_val}}' adjust-position='{{false}}' cursor-spacing='150' focus="{{focus}}">
-            </input>
-            <image src='../../images/sendBtn.png' catchtap="add"></image>
-          </view>
-        </view>
-        <view class="weui-tab__content" hidden="{{activeIndex != 2}}">
-          <!-- <view class='users' wx:for="{{users}}" wx:for-index="myIndex" wx:for-item="user">
-            {{user.visit_name}}
-          </view> -->
-          <scroll-view class="list" style="height:{{windowHeight * 0.54}}px;" scroll-y='true' bindscrolltolower="usersLoadMore" bindscrolltoupper="usersReload" bindscroll="scroll">
-            <view class="flex">
-              <view class="item" wx:for="{{users}}" wx:for-index="myIndex" wx:for-item="user" style='height:{{windowHeight * 0.14}}px'>
-                <!-- <view class="weui-flex__item"> -->
-                <image class='user-logo' src='/images/user-m.png'></image>
-                <view class="placeholder" style='width:{{windowWidth * 0.20}}px'>
-                  {{user.visit_name}}
-                </view>
-                <!-- </view> -->
-              </view>
-            </view>
-          </scroll-view>
-          <view class="body-view">
-            <loading hidden="{{hidden}}" bindchange="loadingChange">
-              加载中...
-            </loading>
-          </view>
-        </view>
-        <view class="weui-tab__content" hidden="{{activeIndex != 3}}">
-          <scroll-view class="scroll-playBack" style="height:{{windowHeight * 0.54}}px;" scroll-y='true' bindscrolltolower="playbackLoadMore" bindscrolltoupper="playbackReload">
-            <view class="flex">
-              <view class="playback-item" wx:for="{{playbacks}}" wx:for-index="index" wx:for-item="playback" style='height:{{windowHeight * 0.25}}px' catchtap='playback' data-video="{{playback}}">
-                <image class='playback-logo' style='width:{{windowWidth*0.45}}px;height:{{windowHeight * 0.15}}px' src='{{playback.coverUrl}}'></image>
-                <view class='playback-title' style='width:{{windowWidth*0.45}}px'>{{playback.title}}</view>
-              </view>
-            </view>
-          </scroll-view>
-        </view>
-      </view>
-    </view>
+<view class="swiper-tab">
+  <view class="swiper-tab-list {{index==0 ? 'on' : ''}}" data-current="0" bindtap="swichNav">
+    <!-- <image class='tab-img' src='/images/member_sel@2x.png'></image> -->
+    简介
+  </view>
+  <view class="swiper-tab-list {{index==1 ? 'on' : ''}}" data-current="1" bindtap="swichNav">
+    <!-- <image class='tab-img' src='/images/member_sel@2x.png'></image> -->
+    聊天
+  </view>
+  <view class="swiper-tab-list {{index==2 ? 'on' : ''}}" data-current="2" bindtap="swichNav">
+    <!-- <image class='tab-img' src='/images/member_sel@2x.png'></image> -->
+    成员
+  </view>
+  <view class="swiper-tab-list {{index==3 ? 'on' : ''}}" data-current="3" bindtap="swichNav">
+    <!-- <image class='tab-img' src='/images/member_sel@2x.png'></image> -->
+    回放
   </view>
 </view>
+<swiper current="{{cur}}" bindchange="swiperChange" style='height: {{windowHeight * 0.60}}px;margin-top:10rpx;'>
+  <swiper-item style='overflow:scroll'>
+    <view class="weui-cell weui-cell_input" style='margin-bottom:10px'>
+      <view class="weui-cell__hd">
+        <view class="weui-label label">直播主题:</view>
+      </view>
+      <view class="weui-cell__bd cell_bd">
+        <view class="">{{name}}</view>
+      </view>
+    </view>
+    <view class="weui-cell weui-cell_input">
+      <view class="weui-cell__hd">
+        <view class="weui-label label">直播时间:</view>
+      </view>
+      <view class="weui-cell__bd cell_bd">
+        <view class="">{{startTime}}</view>
+      </view>
+    </view>
+    <scroll-view scroll-y='true' style='{{windowHeight * 0.55}}px'>
+      <view style='margin:50rpx 0 0 50rpx; text-align:left;'>
+        <template is="wxParse" data="{{wxParseData:article.nodes}}" />
+      </view>
+    </scroll-view>
+  </swiper-item>
+  <swiper-item>
+    <scroll-view scroll-y='true' class='scroll-comments' style='height:{{windowHeight * 0.53}}px;'>
+      <view class='comments' wx:for="{{comments}}" wx:for-index="index" wx:for-item="comment">
+        <view class='comment-item'>
+          <view>
+            <image class='comment-logo' src='/images/user-m.png'></image>
+            <view class='comment-info'>
+              <view class='comment-name'>{{comment.name}}</view>
+              <view class='comment-time'>{{comment.time}}</view>
+            </view>
+          </view>
+          <view class='comment-message'>{{comment.message}}</view>
+        </view>
+      </view>
+    </scroll-view>
+    <view class="sendmessage">
+      <input type="text" placeholder="请输入文字" confirm-type='send' bindinput="bindMessageChange" value='{{news_input_val}}' adjust-position='{{false}}' cursor-spacing='150' focus="{{focus}}">
+      </input>
+      <image src='/images/sendBtn.png' catchtap="add"></image>
+    </view>
+  </swiper-item>
+  <swiper-item>
+    <scroll-view class="list" style="height:{{windowHeight * 0.58}}px;" scroll-y='true' bindscrolltolower="usersLoadMore" bindscrolltoupper="usersReload" bindscroll="scroll">
+      <view class="flex">
+        <view class="item" wx:for="{{users}}" wx:for-index="myIndex" wx:for-item="user" style='height:{{windowHeight * 0.14}}px'>
+          <image class='user-logo' src='/images/user-m.png'></image>
+          <view class="placeholder" style='width:{{windowWidth * 0.20}}px'>
+            {{user.visit_name}}
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+    <view class="body-view">
+      <loading hidden="{{hidden}}" bindchange="loadingChange">
+        加载中...
+      </loading>
+    </view>
+  </swiper-item>
+  <swiper-item>
+    <scroll-view class="scroll-playBack" style="height:{{windowHeight * 0.58}}px;" scroll-y='true' bindscrolltolower="playbackLoadMore" bindscrolltoupper="playbackReload">
+      <view class="flex">
+        <view class="playback-item" wx:for="{{playbacks}}" wx:for-index="index" wx:for-item="playback" style='height:{{windowHeight * 0.25}}px' catchtap='playback' data-video="{{playback}}">
+          <image class='playback-logo' style='width:{{windowWidth*0.45}}px;height:{{windowHeight * 0.15}}px' src='{{playback.coverUrl}}'></image>
+          <view class='playback-title' style='width:{{windowWidth*0.45}}px'>{{playback.title}}</view>
+        </view>
+      </view>
+    </scroll-view>
+  </swiper-item>
+</swiper>

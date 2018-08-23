@@ -143,6 +143,12 @@ Page({
   enterChannel: function(e) {
     var channel = e.currentTarget.dataset.channel;
     var that = this;
+    var visitId;
+    try {
+      visitId = wx.getStorageSync('unionid')
+    } catch (e) {
+      console.error(e);
+    }
     wx.showLoading({
       title: '加载中',
     })
@@ -155,7 +161,7 @@ Page({
       new Date().toGMTString() + "\n" +
       "\n\n" +
       channelsUrl + '/' + id + "?direct_code=&visit_name=" +
-      userName + "&visit_id=&date=";
+      userName + "&visit_id=" + visitId+"&date=";
     var hmacsha1 = "" + CryptoJS.HmacSHA1(StringToSign, app.globalData.AccessKeySecret);
     var wordArray = CryptoJS.enc.Utf8.parse(hmacsha1);
     var base64_auth = CryptoJS.enc.Base64.stringify(wordArray)
@@ -164,9 +170,8 @@ Page({
       data: {
         direct_code: '',
         visit_name: userName,
-        visit_id: '',
+        visit_id: visitId,
         date: ''
-
       },
       header: {
         'content-type': 'application/json', // 默认值
@@ -189,14 +194,13 @@ Page({
           var detail = data.detail;
           var name = data.name;
           var startTime = data.start_time;
-          var visitId = data.visit_id;
           var endTime = data.end_time;
           var historyUserNum = data.history_user_num;
           wx.navigateTo({
             url: '../room/room?rtmpUrl=' + flvUrl + '&coverLogo=' + coverLogo +
               '&liveImage=' + liveImage + '&liveStatus=' + liveStatus + '&detail=' +
               detail + '&name=' + name + '&startTime=' + startTime + '&channel=' +
-              id + '&visitId=' + visitId + '&userName=' + userName + '&endTime=' +
+              id + '&userName=' + userName + '&endTime=' +
               endTime + '&historyUserNum=' + historyUserNum,
             success: function() {
 

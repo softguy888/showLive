@@ -33,15 +33,10 @@ Page({
     liveStatus: '0',
     detail: {},
     name: '',
-    visitId: '',
     startTime: '',
     endTime: '',
     historyUserNum: '',
     userName: '',
-    tabs: ["简介", "聊天", "成员", "回放"],
-    activeIndex: 0,
-    sliderOffset: 0,
-    sliderLeft: 0,
     comments: [],
     playbacks: [],
     windowHeight: 0,
@@ -55,7 +50,9 @@ Page({
     flag_channels: true,
     showControl: true,
     showFullControl: true,
-    fullScreen: false
+    fullScreen: false,
+    cur: 0,
+    index: 0,
   },
 
   onShareAppMessage: function(res) {
@@ -65,7 +62,7 @@ Page({
     }
     return {
       title: this.data.name,
-      path: 'pages/room/room?rtmpUrl=' + this.data.rtmpUrl + ' &coverLogo=' + this.data.coverLogo + '&liveImage=' + this.data.liveImage + '&liveStatus=' + this.data.liveStatus + '&detail=' + this.data.detaiBase64 + '&name=' + this.data.name + '&startTime=' + this.data.startTime + '&channel=' + this.data.channel + '&visitId=' + this.data.visitId + '&userName=' + this.data.userName + '&endTime=' + this.data.endTime + '&historyUserNum=' + this.data.historyUserNum
+      path: 'pages/room/room?rtmpUrl=' + this.data.rtmpUrl + ' &coverLogo=' + this.data.coverLogo + '&liveImage=' + this.data.liveImage + '&liveStatus=' + this.data.liveStatus + '&detail=' + this.data.detaiBase64 + '&name=' + this.data.name + '&startTime=' + this.data.startTime + '&channel=' + this.data.channel +  '&userName=' + this.data.userName + '&endTime=' + this.data.endTime + '&historyUserNum=' + this.data.historyUserNum
     }
   },
 
@@ -89,8 +86,6 @@ Page({
     wx.getSystemInfo({
       success: function(res) {
         that.setData({
-          sliderLeft: (res.windowWidth / that.data.tabs.length - sliderWidth) / 2,
-          sliderOffset: res.windowWidth / that.data.tabs.length * that.data.activeIndex,
           scrollHeight: res.windowHeight,
           windowHeight: res.windowHeight,
           windowWidth: res.windowWidth
@@ -110,7 +105,6 @@ Page({
     if (option.liveImage && option.liveImage != '') {
       liveimage = option.liveImage;
     }
-    console.log('-------------'+liveimage);
     //设置从index页面传过来的频道信息
     this.setData({
       rtmpUrl: option.rtmpUrl,
@@ -120,7 +114,6 @@ Page({
       name: option.name,
       startTime: option.startTime,
       channel: option.channel,
-      visitId: option.visitId,
       userName: option.userName,
       endTime: option.endTime,
       historyUserNum: option.historyUserNum,
@@ -142,6 +135,8 @@ Page({
 
   onShow() {
     var that = this;
+    getUsers(this);
+    getPlayback(this);
     timer_comments = setTimeout(function() {
       getComments(that);
     }, 100);
@@ -158,11 +153,17 @@ Page({
 
     //向服务器轮询请求评论
     function getComments(page) {
+      var visitId;
+      try {
+        visitId = wx.getStorageSync('unionid')
+      } catch (e) {
+        console.error(e);
+      }
       var StringToSign =
         "GET" + "\n" +
         new Date().toGMTString() + "\n" +
         "\n\n" +
-        commentsUrl + page.data.channel + "?visit_id=" + page.data.visitId +
+        commentsUrl + page.data.channel + "?visit_id=" + visitId +
         "&date=" + date_comments;
       var hmacsha1 = "" + CryptoJS.HmacSHA1(StringToSign, app.globalData.AccessKeySecret);
       var wordArray = CryptoJS.enc.Utf8.parse(hmacsha1);
@@ -171,7 +172,7 @@ Page({
       wx.request({
         url: commentsUrl + page.data.channel,
         data: {
-          visit_id: page.data.visitId,
+          visit_id: visitId,
           date: date_comments
         },
         header: {
@@ -233,12 +234,18 @@ Page({
     //向服务器轮询请求频道信息
     function getChannels(page) {
       //      var datetmp = new Date().getTime();
+      var visitId;
+      try {
+        visitId = wx.getStorageSync('unionid')
+      } catch (e) {
+        console.error(e);
+      }
       var StringToSign =
         "GET" + "\n" +
         new Date().toGMTString() + "\n" +
         "\n\n" +
         userListUrl + page.data.channel + "?direct_code=&visit_name=" +
-        page.data.userName + "&visit_id=" + page.data.visitId + "&date=" + date_channels;
+        page.data.userName + "&visit_id=" + visitId + "&date=" + date_channels;
       var hmacsha1 = "" + CryptoJS.HmacSHA1(StringToSign, app.globalData.AccessKeySecret);
       var wordArray = CryptoJS.enc.Utf8.parse(hmacsha1);
       var base64_auth = CryptoJS.enc.Base64.stringify(wordArray);
@@ -247,7 +254,7 @@ Page({
         data: {
           direct_code: '',
           visit_name: page.data.userName,
-          visit_id: page.data.visitId,
+          visit_id: visitId,
           date: date_channels
 
         },
@@ -274,7 +281,6 @@ Page({
             if (data.live_image && data.live_image != '') {
               liveimage = data.live_image;
             }
-            console.log('2-------------' + liveimage);
             page.setData({
               rtmpUrl: data.streams.rtmp_play_url,
               liveImage: liveimage,
@@ -328,94 +334,11 @@ Page({
       //计算相差分钟数
       var leave2 = leave1 % (3600 * 1000) //计算小时数后剩余的毫秒数
       var minutes = Math.floor(leave2 / (60 * 1000)) //计算相差分钟数
-      console.log(dayDiff + ' ' + hours + ' ' + minutes);
       that.setData({
         day: dayDiff,
         hour: hours,
         minute: minutes
       });
-    }
-  },
-
-
-  tabClick: function(e) {
-    // var users = new Array(40);
-    // var user = {
-    //   visit_name: 'wfj'
-    // }
-    // for (var i = 0; i < users.length; i++) {
-    //   users[i] = user;
-    // }
-    this.setData({
-      sliderOffset: e.currentTarget.offsetLeft,
-      activeIndex: e.currentTarget.id,
-      //users: users
-    });
-    if (e.currentTarget.id == 1) { //点击聊天tab
-      // this.setData({
-      //   focus: true
-      // });
-    } else if (e.currentTarget.id == 2) { //点击成员tab
-      getUsers(this);
-    } else if (e.currentTarget.id == 3) { //点击回放tab
-      // var playback_demo = [{
-      //   title: '2018-07-26 16:31:47_2018-07-26 18:01:45',
-      //   coverUrl: 'http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/718114f05285890780734647008/1532599567_3715980542.100_0.jpg',
-      //   videoUrl: 'http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/718114f05285890780734647008/f0.mp4'
-      // }, {
-      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      // }, {
-      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      // }, {
-      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      // }, {
-      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      // }, {
-      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      // }, {
-      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      // }, {
-      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      // }, {
-      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      // }, {
-      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      // }, {
-      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      // }, {
-      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      // }, {
-      //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
-      //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
-      //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
-      // }];
-      // this.setData({
-      //   playbacks: playback_demo
-      // });
-
-      getPlayback(this);
     }
   },
 
@@ -528,7 +451,6 @@ Page({
 
   //页面滑动到底部
   usersLoadMore: function() {
-    console.log("lower");
     loadMore(this);
   },
 
@@ -553,12 +475,19 @@ Page({
   },
 
 
-  bindChange: function(e) {
+
+  bindMessageChange: function(e) {
     message = e.detail.value
   },
 
   add: function(e) {
     var that = this;
+    var visitId;
+    try {
+      visitId = wx.getStorageSync('unionid')
+    } catch (e) {
+      console.error(e);
+    }
     //var messageArray = CryptoJS.enc.Utf8.parse(message);
     //var base64_message = CryptoJS.enc.Base64.stringify(messageArray)
     if (message == '') {
@@ -569,7 +498,7 @@ Page({
       })
       return;
     }
-    var body = "{\"visit_id\":\"" + that.data.visitId + "\",\"visit_name\":\"" +
+    var body = "{\"visit_id\":\"" + visitId + "\",\"visit_name\":\"" +
       that.data.userName + "\",\"message\":\"" + message + "\"}";
     var body_md5 = CryptoJS.MD5(body).toString();
     var StringToSign =
@@ -583,7 +512,7 @@ Page({
     wx.request({
       url: commentsUrl + that.data.channel,
       data: {
-        visit_id: that.data.visitId,
+        visit_id: visitId,
         visit_name: that.data.userName,
         message: message
       },
@@ -640,7 +569,6 @@ Page({
   },
 
   clickScreen: function() {
-    console.log('-----------click screen');
     var that = this;
     if (this.data.fullScreen) {
       if (this.data.showFullControl) {
@@ -673,8 +601,92 @@ Page({
         });
       }
     }
-  }
+  },
 
+  swichNav: function (e) {
+    // var users = new Array(40);
+    // var user = {
+    //   visit_name: 'wfj'
+    // }
+    // for (var i = 0; i < users.length; i++) {
+    //   users[i] = user;
+    // }
+    // this.setData({
+    //   users: users
+    // });
+    if (this.data.cur === e.target.dataset.current) {
+      return false;
+    } else {
+      this.setData({
+        cur: e.target.dataset.current
+      })
+     
+        // var playback_demo = [{
+        //   title: '2018-07-26 16:31:47_2018-07-26 18:01:45',
+        //   coverUrl: 'http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/718114f05285890780734647008/1532599567_3715980542.100_0.jpg',
+        //   videoUrl: 'http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/718114f05285890780734647008/f0.mp4'
+        // }, {
+        //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+        //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+        //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+        // }, {
+        //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+        //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+        //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+        // }, {
+        //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+        //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+        //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+        // }, {
+        //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+        //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+        //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+        // }, {
+        //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+        //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+        //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+        // }, {
+        //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+        //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+        //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+        // }, {
+        //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+        //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+        //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+        // }, {
+        //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+        //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+        //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+        // }, {
+        //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+        //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+        //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+        // }, {
+        //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+        //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+        //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+        // }, {
+        //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+        //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+        //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+        // }, {
+        //   title: "2018-07-26 18:01:45_2018-07-26 18:30:52",
+        //   coverUrl: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtransgzp1256653728/78a4c8725285890780734967212/1532601116_4028727800.100_0.jpg",
+        //   videoUrl: "http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/78a4c8725285890780734967212/f0.mp4"
+        // }];
+        // this.setData({
+        //   playbacks: playback_demo
+        // });
+
+    }
+  },
+  swiperChange: function (e) {
+    let current = e.detail.current;
+    let source = e.detail.source
+    this.setData({
+      index: current
+    })
+  }
 })
 
 

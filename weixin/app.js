@@ -10,7 +10,7 @@ App({
     // AccessKeySecret: 'admin'
   },
 
-  onLaunch: function (options) {
+  onLaunch: function(options) {
     // 展示本地存储能力
     var logs = wx.getStorageSync('logs') || []
     logs.unshift(Date.now())
@@ -18,28 +18,52 @@ App({
 
     // 登录
     wx.login({
-      success: function (res) {
+      success: function(res) {
         console.log('res.code:' + res.code);
         //发送给后台获取openid,unionid
         if (res.code) {
           //https://api.weixin.qq.com/sns/jscode2session?appid=wx842b8a8a5b90c64a&secret=576b6626cda0c3a59de0f1667fd4dbb0&js_code=0819eKXN0IJREb20XO0O0JAIXN09eKXs&grant_type=authorization_code
           //{"session_key":"O\/YVQPHxQY18DrsFq+\/bjQ==","openid":"owLMM5NEZ6izEtP2aPKiLYlJ520E","unionid":"ojygT1ogRmgs7AiQp2nAtQthYlxY"}
           //发起网络请求
-          // wx.request({
-          //   url: 'https://api.weixin.qq.com/sns/jscode2session',
-          //   data: {
-          //     appid: 'wx842b8a8a5b90c64a',
-          //     secret: '576b6626cda0c3a59de0f1667fd4dbb0',
-          //     js_code: res.code,
-          //     grant_type: 'authorization_code'
-          //   },
-          //   success: function (data) {
-          //     console.log(data);
-          //   },
-          //   fail: function (data) {
-          //     console.log(data);
-          //   }
-          //})
+          wx.request({
+            url: 'https://api.imbcloud.cn/miniappsAuth.do',
+            data: {
+              code: res.code,
+            },
+            success: function(data) {
+              console.log(data);
+              if (data.data.result == 'true') {
+                var unionid = data.data.unionid;
+                var openid = data.data.openid;
+                if (!unionid || unionid == '') {
+                  wx.showToast({
+                    title: '微信登陆失败:没有获取unionid',
+                    icon: 'none',
+                    duration: 2000
+                  });
+                } else {
+                  try {
+                    wx.setStorageSync('unionid', unionid)
+                  } catch (e) {
+                    console.error(e);
+                  }
+                }
+              } else {
+                wx.showToast({
+                  title: '微信登陆失败:' + data.errMsg,
+                  icon: 'none',
+                  duration: 2000
+                });
+              }
+            },
+            fail: function(data) {
+              wx.showToast({
+                title: '微信登陆失败: 请求失败',
+                icon: 'none',
+                duration: 2000
+              });
+            }
+          })
         } else {
           console.log('登录失败！' + res.errMsg)
         }
@@ -65,8 +89,8 @@ App({
         }
       }
     })
-    console.log('options:'+options.scene);
+    console.log('options:' + options.scene);
   },
- 
+
 
 })
