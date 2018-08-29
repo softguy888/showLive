@@ -23,28 +23,34 @@ Page({
     searchValue: ''
   },
 
-  onLoad: function() {
+  onLoad: function (option) {
     wx.showShareMenu();
     var that = this;
+    var accountId = option.accountId;
     try {
-      var AccessKeyId = wx.getStorageSync('AccessKeyId');
-      var AccessKeySecret = wx.getStorageSync('AccessKeySecret')
-      if (AccessKeyId && AccessKeySecret) {
-        // Do something with return value
-        console.log('------------' + AccessKeyId);
-      } else {
-        console.log('------------no info');
-        // wx.redirectTo({
-        //   url: '../login/login'
-        // })
-      }
+      wx.setStorageSync('accountId', accountId)
     } catch (e) {
-      wx.showToast({
-        title: '获取账号信息失败',
-        icon: 'none',
-        duration: 2000
-      });
+      console.error(e);
     }
+    // try {
+    //   var AccessKeyId = wx.getStorageSync('AccessKeyId');
+    //   var AccessKeySecret = wx.getStorageSync('AccessKeySecret')
+    //   if (AccessKeyId && AccessKeySecret) {
+    //     // Do something with return value
+    //     console.log('------------' + AccessKeyId);
+    //   } else {
+    //     console.log('------------no info');
+    //     // wx.redirectTo({
+    //     //   url: '../login/login'
+    //     // })
+    //   }
+    // } catch (e) {
+    //   wx.showToast({
+    //     title: '获取账号信息失败',
+    //     icon: 'none',
+    //     duration: 2000
+    //   });
+    // }
     // 查看是否授权
     wx.getSetting({
       success: function(res) {
@@ -75,13 +81,19 @@ Page({
   },
 
   onShareAppMessage: function(res) {
+    var accountId = '';
+    try {
+      accountId = wx.getStorageSync('accountId')
+    } catch (e) {
+      console.error(e);
+    }
     if (res.from === 'button') {
       // 来自页面内转发按钮
       console.log(res.target)
     }
     return {
       title: '美播云互动',
-      path: 'pages/main/main'
+      path: 'pages/main/main?accountId=' + accountId
     }
   },
 
@@ -155,7 +167,7 @@ Page({
     var id = channel.id;
     var datetmp = new Date().getTime();
     //var userName = CusBase64.CusBASE64.encoder(that.data.userInfo.nickName);
-    var userName = CusBase64.CusBASE64.encoder(that.data.userInfo.nickName);
+    var userName = CusBase64.CusBASE64.encoder('汪发佳');
     var StringToSign =
       "GET" + "\n" +
       new Date().toGMTString() + "\n" +
@@ -353,12 +365,17 @@ function getChannelList(that, filter, page, loadmore) {
   //   endChannels: channeend,
   //   playbacks: p
   // })
-
+  var accountId = '';
+  try {
+    accountId = wx.getStorageSync('accountId')
+  } catch (e) {
+    console.error(e);
+  }
   var StringToSign =
     "GET" + "\n" +
     new Date().toGMTString() + "\n" +
     "\n\n" +
-    channelsUrl + "?live=&channel_id=" + filter + "&order=live_status|desc&page=" + page;
+    channelsUrl + "?live=&channel_id=" + filter + "&order=live_status|desc&page=" + page + '&account_id=' + accountId;
   var hmacsha1 = "" + CryptoJS.HmacSHA1(StringToSign, app.globalData.AccessKeySecret);
   var wordArray = CryptoJS.enc.Utf8.parse(hmacsha1);
   var base64_auth = CryptoJS.enc.Base64.stringify(wordArray)
@@ -368,7 +385,8 @@ function getChannelList(that, filter, page, loadmore) {
       live: '',
       channel_id: filter,
       order: 'live_status|desc',
-      page: page
+      page: page,
+      account_id: accountId
     },
     header: {
       'Authorization': 'iMBCloud ' + app.globalData.AccessKeyId + ':' + base64_auth,
@@ -472,11 +490,17 @@ function getChannelList(that, filter, page, loadmore) {
 }
 
 function getPlaybackList(that, filter, page, loadmore) {
+  var accountId = '';
+  try {
+    accountId = wx.getStorageSync('accountId')
+  } catch (e) {
+    console.error(e);
+  }
   var StringToSign =
     "GET" + "\n" +
     new Date().toGMTString() + "\n" +
     "\n\n" +
-    playbacksUrl + "?title=" + filter + "&status=1&page=" + page;
+    playbacksUrl + "?title=" + filter + "&status=1&page=" + page + "&account_id=" + accountId;
   var hmacsha1 = "" + CryptoJS.HmacSHA1(StringToSign, app.globalData.AccessKeySecret);
   var wordArray = CryptoJS.enc.Utf8.parse(hmacsha1);
   var base64_auth = CryptoJS.enc.Base64.stringify(wordArray)
@@ -485,7 +509,8 @@ function getPlaybackList(that, filter, page, loadmore) {
     data: {
       title: filter,
       status: 1,
-      page: page
+      page: page,
+      account_id: accountId
     },
     header: {
       'Authorization': 'iMBCloud ' + app.globalData.AccessKeyId + ':' + base64_auth,
