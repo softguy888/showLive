@@ -91,6 +91,4 @@ App({
     })
     console.log('options:' + options.scene);
   },
-
-
 })

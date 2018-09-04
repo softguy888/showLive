@@ -23,7 +23,7 @@ Page({
     searchValue: ''
   },
 
-  onLoad: function (option) {
+  onLoad: function(option) {
     wx.showShareMenu();
     var that = this;
     var accountId = option.accountId;
@@ -105,12 +105,12 @@ Page({
     getChannelList(this, '', 1, false);
     if (isChannelLoadAll) {
       getPlaybackList(this, '', 1, false);
-      page_playback ++;
+      page_playback++;
     }
   },
-/**触底加载更多
- * 依次判断是否加载频道，回放，如果到以全部加载则显示加载完毕
- */
+  /**触底加载更多
+   * 依次判断是否加载频道，回放，如果到以全部加载则显示加载完毕
+   */
   onReachBottom: function() {
     this.setData({
       isHideLoadMore: false,
@@ -130,11 +130,11 @@ Page({
     }
   },
 
-/**下拉刷新
- * 频道页数，回放页数置为1。频道全部加载标志位，回放全部加载标志位置为false
- * 加载第一页频道
- * 如果只有一页，频道全部加载标志位置为true，并加载回放
- */
+  /**下拉刷新
+   * 频道页数，回放页数置为1。频道全部加载标志位，回放全部加载标志位置为false
+   * 加载第一页频道
+   * 如果只有一页，频道全部加载标志位置为true，并加载回放
+   */
   onPullDownRefresh: function() {
     wx.showNavigationBarLoading();
     isChannelLoadAll = false;
@@ -144,7 +144,7 @@ Page({
     getChannelList(this, '', page_channel, false);
     if (isChannelLoadAll) {
       getPlaybackList(this, '', page_playback, false);
-      page_playback ++;
+      page_playback++;
     }
   },
 
@@ -167,13 +167,13 @@ Page({
     var id = channel.id;
     var datetmp = new Date().getTime();
     //var userName = CusBase64.CusBASE64.encoder(that.data.userInfo.nickName);
-    var userName = CusBase64.CusBASE64.encoder('汪发佳');
+    var userName = CusBase64.CusBASE64.encoder(that.data.userInfo.nickName);
     var StringToSign =
       "GET" + "\n" +
       new Date().toGMTString() + "\n" +
       "\n\n" +
       channelsUrl + '/' + id + "?direct_code=&visit_name=" +
-      userName + "&visit_id=" + visitId+"&date=";
+      userName + "&visit_id=" + visitId + "&date=";
     var hmacsha1 = "" + CryptoJS.HmacSHA1(StringToSign, app.globalData.AccessKeySecret);
     var wordArray = CryptoJS.enc.Utf8.parse(hmacsha1);
     var base64_auth = CryptoJS.enc.Base64.stringify(wordArray)
@@ -208,12 +208,19 @@ Page({
           var startTime = data.start_time;
           var endTime = data.end_time;
           var historyUserNum = data.history_user_num;
+          var userNum;
+          if (data.live_status == "-1") {
+            userNum = data.history_user_num;
+          } else if (data.live_status == "1") {
+            userNum = data.online_user_num
+          }
+          var commentCount = data.comment_count;
           wx.navigateTo({
             url: '../room/room?rtmpUrl=' + flvUrl + '&coverLogo=' + coverLogo +
               '&liveImage=' + liveImage + '&liveStatus=' + liveStatus + '&detail=' +
               detail + '&name=' + name + '&startTime=' + startTime + '&channel=' +
               id + '&userName=' + userName + '&endTime=' +
-              endTime + '&historyUserNum=' + historyUserNum,
+              endTime + '&historyUserNum=' + historyUserNum + '&userNum=' + userNum + '&commentCount=' + commentCount,
             success: function() {
 
             }, //成功后的回调；  
@@ -246,16 +253,16 @@ Page({
     })
   },
 
-  enterPlayback: function(e){
+  enterPlayback: function(e) {
     var playback = e.currentTarget.dataset.playback;
     wx.navigateTo({
       url: '../playback/playback?videoUrl=' + playback.videoUrl + '&time=' + playback.time +
         '&title=' + playback.name,
-      success: function () {
+      success: function() {
 
       }, //成功后的回调；  
-      fail: function () { }, //失败后的回调；  
-      complete: function () { } //结束后的回调(成功，失败都会执行)  
+      fail: function() {}, //失败后的回调；  
+      complete: function() {} //结束后的回调(成功，失败都会执行)  
     })
   },
 
@@ -351,7 +358,7 @@ function getChannelList(that, filter, page, loadmore) {
   //   userNum: '23',
   //   commentCount: '33'
   // }, ]
-//http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/19317ad05285890781006571667/f0.mp4", transcodeList: Array(1), start_time: "2018-08-09 18:27:27", cover_url: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtra…85890781006571667/1533812511_3195201632.100_0.jpg
+  //http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/19317ad05285890781006571667/f0.mp4", transcodeList: Array(1), start_time: "2018-08-09 18:27:27", cover_url: "http://1256653728.vod2.myqcloud.com/cdd899f4vodtra…85890781006571667/1533812511_3195201632.100_0.jpg
   // var p = [{
   //   videoUrl: 'http://1256653728.vod2.myqcloud.com/19b0f74cvodgzp1256653728/19317ad05285890781006571667/f0.mp4',
   //   name: '宽窄带',

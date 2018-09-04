@@ -1,8 +1,9 @@
 {
   "pages":[
+    "pages/room/room",
     "pages/main/main",
     "pages/login/login",
-    "pages/room/room",
+    
     "pages/search/search",
     "pages/index/index",
     "pages/playback/playback",

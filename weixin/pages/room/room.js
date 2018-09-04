@@ -5,7 +5,7 @@ var CryptoJS = require("../../utils/crypto-js");
 var WxParse = require('../../wxParse/wxParse.js');
 var userListUrl = "https://api.imbcloud.cn:5443/access/channels/";
 var commentsUrl = "https://api.imbcloud.cn:5443/access/comments/";
-var replayUrl = 'https://api.imbcloud.cn:5443/access/playback/'
+var replayUrl = 'https://api.imbcloud.cn:5443/access/playback/';
 var timer_channels;
 var timer_comments;
 var timer_live;
@@ -53,6 +53,8 @@ Page({
     fullScreen: false,
     cur: 0,
     index: 0,
+    userNum: 0,
+    commentCount: 0,
   },
 
   onShareAppMessage: function(res) {
@@ -117,7 +119,9 @@ Page({
       userName: option.userName,
       endTime: option.endTime,
       historyUserNum: option.historyUserNum,
-      detaiBase64: detail
+      detaiBase64: detail,
+      userNum: option.userNum,
+      commentCount: option.commentCount
     });
   },
 
@@ -138,10 +142,10 @@ Page({
     getUsers(this);
     getPlayback(this);
     timer_comments = setTimeout(function() {
-      getComments(that);
+      //getComments(that);
     }, 100);
     timer_channels = setTimeout(function() {
-      getChannels(that);
+      //getChannels(that);
     }, 100);
     if (this.data.liveStatus == '0') {
       waitTime(that);
@@ -273,6 +277,13 @@ Page({
             date_channels = data.date;
             var parsedWordArray = CryptoJS.enc.Base64.parse(data.detail);
             var parsedStr = parsedWordArray.toString(CryptoJS.enc.Utf8);
+            var userNum;
+            if (data.live_status == "-1"){
+              userNum = data.history_user_num;
+            } else if (data.live_status == "1"){
+              userNum = data.online_user_num
+            }
+            var commentCount = data.comment_count;
             var detail = parsedStr.split("</p>");
             for (var i = 0; i < detail.length; i++) {
               detail[i] = detail[i].replace("<p>", "");
@@ -288,6 +299,8 @@ Page({
               liveStatus: data.live_status,
               name: data.name,
               startTime: data.start_time,
+              userNum: userNum,
+              commentCount: commentCount
             });
             if (onlineUserNum != data.online_user_num || historyUserNum != data.history_user_num) {
               onlineUserNum = data.online_user_num;

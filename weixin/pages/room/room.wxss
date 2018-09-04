@@ -307,3 +307,38 @@ live-player {
 .tab-content{
   display: inline-block;
 }
+
+.users-comments {
+  position: absolute;
+  right: 20rpx;
+  display: inline-block;
+}
+
+.icon {
+  display: inline-block;
+  height: 18px;
+  width: 18px;
+}
+
+.watch-num {
+  display: inline-block;
+  font-size: 13px; 
+  margin: 0 10rpx 0 10rpx;
+  color: rgb(75, 74, 74);
+}
+
+.share {
+  background-color: gainsboro;
+  width: 100rpx;
+  height: 100rpx;
+  opacity: 0.1;
+  position: absolute;
+  right: 20rpx;
+  top: 60rpx;
+}
+
+.share image {
+  opacity: 1;
+  width: 80rpx;
+  height: 80rpx;
+}

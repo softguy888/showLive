@@ -13,6 +13,7 @@
   <view wx:else style='width: 100%; height: {{windowHeight * 0.3}}px; text-align: center; margin: 0 auto;background:url({{liveImage}}) no-repeat center;background-size:100% 100%;'>
     <image class='cover-logo' src='{{coverLogo}}'>
     </image>
+    <view class='share'><image src='../../images/QRCode.png'></image></view>
     <image class='cover-logo-right' src='../../images/right_logo.png'>
     </image>
     <view wx:if="{{liveStatus==-1}}" style='margin-top:{{windowHeight * 0.1}}px'>
@@ -40,6 +41,12 @@
         <view class='cover-time'>时</view>
         <view class='cover-time'>分</view>
       </view>
+    </view>
+    <view class='users-comments'>
+      <image src='../../images/users.png' class='icon'></image>
+      <view class='watch-num'>{{userNum}}1000</view>
+      <image src='../../images/comments.png' class='icon'></image>
+      <view class='watch-num'>{{commentCount}}2350</view>
     </view>
   </view>
 </view>
